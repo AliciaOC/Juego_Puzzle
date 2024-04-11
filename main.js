@@ -8,8 +8,7 @@ formulario.addEventListener("submit", (event) => {
     event.preventDefault(); // Prevenir el envío del formulario
 
     let ficha = parseInt(document.getElementById("ficha").value);
-    let movimiento = document.getElementById("movimiento").value;
 
     // Llamar al método moverFicha con los valores obtenidos
-    juego.moverFicha(ficha, movimiento);
+    juego.moverFicha(ficha);
 });

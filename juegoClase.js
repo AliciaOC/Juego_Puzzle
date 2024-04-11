@@ -150,21 +150,20 @@ class Juego {
 
         formulario.innerHTML = `
             <label for="ficha">Introduce el número de la ficha que quieres mover</label>
-            <input type="number" id="ficha" name="ficha" min="1" max="${this.filas * this.columnas - this.espacios}">
-            <label for="movimiento">¿Hacia dónde quieres moverla?</label>
-            <select id="movimiento" name="movimiento">
-                <option value="arriba">Arriba</option>
-                <option value="abajo">Abajo</option>
-                <option value="izquierda">Izquierda</option>
-                <option value="derecha">Derecha</option>
-            </select>
+            <input type="number" id="ficha" name="ficha" min="1" max="${this.filas * this.columnas - this.espacios} required">
             <input type="submit" value="Mover ficha">
         `;
         document.getElementById("puzzle").appendChild(formulario);
     }
 
-    moverFicha(valorCasilla, movimiento) {
+    moverFicha(valorCasilla) {
+        let article = document.getElementById("infoJuego");
+        article.innerHTML = "";
+        let mensaje = document.createElement("p");
+        article.appendChild(mensaje);
+
         let espaciolibre = false;
+        let movimiento = "";
 
         let fila, columna;
         for (let i = 0; i < this.filas; i++) {
@@ -177,27 +176,22 @@ class Juego {
             }
         }
 
-        switch (movimiento) {
-            case "arriba":
-                if (fila > 0 && this.matriz[fila - 1][columna] === " ") {
-                    espaciolibre = true;
-                }
-                break;
-            case "abajo":
-                if (fila < this.filas - 1 && this.matriz[fila + 1][columna] === " ") {
-                    espaciolibre = true;
-                }
-                break;
-            case "izquierda":
-                if (columna > 0 && this.matriz[fila][columna - 1] === " ") {
-                    espaciolibre = true;
-                }
-                break;
-            case "derecha":
-                if (columna < this.columnas - 1 && this.matriz[fila][columna + 1] === " ") {
-                    espaciolibre = true;
-                }
-                break;
+        //Busco si hay espacio en blanco anexo a la casilla y determino el movimiento.
+        if (fila > 0 && this.matriz[fila - 1][columna] === " ") {
+            espaciolibre = true;
+            movimiento = "arriba";
+        }
+        if (fila < this.filas - 1 && this.matriz[fila + 1][columna] === " ") {
+            espaciolibre = true;
+            movimiento = "abajo";
+        }
+        if (columna > 0 && this.matriz[fila][columna - 1] === " ") {
+            espaciolibre = true;
+            movimiento = "izquierda";
+        }
+        if (columna < this.columnas - 1 && this.matriz[fila][columna + 1] === " ") {
+            espaciolibre = true;
+            movimiento = "derecha";
         }
 
         if (espaciolibre) {
@@ -219,20 +213,17 @@ class Juego {
                     this.matriz[fila][columna] = " ";
                     break;
             }
+
             this.movimientos++;
             this.imprimirMatriz();
 
-            let mensaje = document.querySelector("p");
-            mensaje.innerHTML = ""; // Limpiar el mensaje anterior
             if (!this.comprobarVictoria()) {
                 mensaje.innerHTML = `Has realizado ${this.movimientos} movimientos`;
             } else {
                 mensaje.innerHTML = `¡Enhorabuena! Has completado el juego en ${this.tiempoTotal()} minutos y ${this.movimientos} movimientos`;
             }
         } else {
-            alert("Movimiento no válido");
-            document.getElementById("formulario").innerHTML = "";
-            this.imprimirFormulario();
+            mensaje.innerHTML = "Movimiento no válido, intente con un número adyacente al espacio en blanco.";
         }
     }
 
