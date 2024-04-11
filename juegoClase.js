@@ -1,8 +1,8 @@
 class Juego {
-    constructor(filas, columnas, espacios) {
-        this._filas = filas;
-        this._columnas = columnas;
-        this._espacios = espacios;
+    constructor() {
+        this._filas = 3;
+        this._columnas = 3;
+        this._espacios = 1;
         this._relleno = [];
         this._matriz = [];
         this._tiempoInicio = new Date();
@@ -116,7 +116,15 @@ class Juego {
     }
 
     imprimirMatriz() {
-        let tabla = document.querySelector("table");
+        // Eliminar la tabla si ya existe
+        if (document.querySelector("table")) {
+            document.querySelector("table").remove();
+        }
+
+        //Crear tabla y añadir a section con id=puzzle
+        let tabla = document.createElement("table");
+        document.getElementById("puzzle").appendChild(tabla);
+
         for (let fila of this.matriz) {
             let tr = document.createElement("tr");
             for (let casilla of fila) {
@@ -138,6 +146,7 @@ class Juego {
         }
         // Crear y agregar el formulario al final de la tabla
         let formulario = document.createElement("form");
+        formulario.setAttribute("id", "formulario");
 
         formulario.innerHTML = `
             <label for="ficha">Introduce el número de la ficha que quieres mover</label>
@@ -214,14 +223,16 @@ class Juego {
             this.imprimirMatriz();
 
             let mensaje = document.querySelector("p");
-            mensaje.textContent = ""; // Limpiar el mensaje anterior
+            mensaje.innerHTML = ""; // Limpiar el mensaje anterior
             if (!this.comprobarVictoria()) {
-                mensaje.textContent = `Has realizado ${this.movimientos} movimientos`;
+                mensaje.innerHTML = `Has realizado ${this.movimientos} movimientos`;
             } else {
-                mensaje.textContent = `¡Enhorabuena! Has completado el juego en ${this.tiempoTotal()} minutos y ${this.movimientos} movimientos`;
+                mensaje.innerHTML = `¡Enhorabuena! Has completado el juego en ${this.tiempoTotal()} minutos y ${this.movimientos} movimientos`;
             }
         } else {
             alert("Movimiento no válido");
+            document.getElementById("formulario").innerHTML = "";
+            this.imprimirFormulario();
         }
     }
 
