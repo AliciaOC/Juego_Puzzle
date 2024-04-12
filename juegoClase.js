@@ -79,7 +79,7 @@ class Juego {
     }
 
     calcularRelleno() {
-        // Los numeros empiezan en 1 y terminan en filas*columnas-espacios
+        // Los numeros empiezan en 1 y terminan en 8 por lo que podría hacerlo manualmente, pero lo dejo así por si se cambia el tamaño del puzzle
         for (let i = 1; i <= this.filas * this.columnas - this.espacios; i++) {
             this.relleno.push(i);
         }
@@ -116,11 +116,6 @@ class Juego {
     }
 
     imprimirMatriz() {
-        // Eliminar la tabla si ya existe
-        if (document.querySelector("table")) {
-            document.querySelector("table").remove();
-        }
-
         //Crear tabla y añadir a section con id=puzzle
         let tabla = document.createElement("table");
         document.getElementById("puzzle").appendChild(tabla);
@@ -134,26 +129,17 @@ class Juego {
             }
             tabla.appendChild(tr);
         }
-        if (!this.comprobarVictoria()) {
-            this.imprimirFormulario();
-        }
-    }
 
-    imprimirFormulario() {
-        // Eliminar el formulario si ya existe
-        if (document.querySelector("form")) {
-            document.querySelector("form").remove();
-        }
-        // Crear y agregar el formulario al final de la tabla
-        let formulario = document.createElement("form");
-        formulario.setAttribute("id", "formulario");
+        // Agregar evento a todas las casillas para que el usuario pueda pulsar la casilla que quiera mover
+        let casillas = document.getElementsByTagName("td");
+        for (let casilla of casillas) {
 
-        formulario.innerHTML = `
-            <label for="ficha">Introduce el número de la ficha que quieres mover</label>
-            <input type="number" id="ficha" name="ficha" min="1" max="${this.filas * this.columnas - this.espacios} required">
-            <input type="submit" value="Mover ficha">
-        `;
-        document.getElementById("puzzle").appendChild(formulario);
+            casilla.addEventListener("click", (event) => {
+
+                let ficha = parseInt(event.target.innerHTML);
+                juego.moverFicha(ficha);
+            });
+        };
     }
 
     moverFicha(valorCasilla) {
@@ -215,12 +201,13 @@ class Juego {
             }
 
             this.movimientos++;
+            document.querySelector("table").remove();
             this.imprimirMatriz();
 
             if (!this.comprobarVictoria()) {
                 mensaje.innerHTML = `Has realizado ${this.movimientos} movimientos`;
             } else {
-                mensaje.innerHTML = `¡Enhorabuena! Has completado el juego en ${this.tiempoTotal()} minutos y ${this.movimientos} movimientos`;
+                mensaje.innerHTML = `¡Enhorabuena! Has completado el juego en ${this.tiempoTotal()} segundos y ${this.movimientos} movimientos`;
             }
         } else {
             mensaje.innerHTML = "Movimiento no válido, intente con un número adyacente al espacio en blanco.";
@@ -228,14 +215,13 @@ class Juego {
     }
 
     restart() {
-        let reiniciar = confirm("¿Quieres reiniciar el juego?");
-        if (reiniciar) {
-            this._tiempoInicio = new Date();
-            this._movimientos = 0;
-            this.calcularRelleno();
-            this.crearMatriz();
-            this.imprimirMatriz();
-        }
+        document.querySelector("table").remove();
+        this._tiempoInicio = new Date();
+        this._movimientos = 0;
+        this.crearMatriz();
+        document.getElementById("infoJuego").innerHTML = "";
+        this.imprimirMatriz();
+
     }
 
     calcularSolucion() {
@@ -243,11 +229,7 @@ class Juego {
         for (let i = 1; i <= this.filas * this.columnas - this.espacios; i++) {
             rellenoOrdenado.push(i);
         }
-        let espaciosSolucion = [];
-        for (let i = 0; i < this.espacios; i++) {
-            espaciosSolucion.push(" ");
-        }
-        rellenoOrdenado.push(espaciosSolucion);
+        rellenoOrdenado.push(" ");
 
         const solucion = () => {
             let solucionMatriz = [];
@@ -280,7 +262,23 @@ class Juego {
     tiempoTotal() {
         //Calculo los minutos
         let tiempoFinal = new Date();
-        let tiempoTotal = Math.floor((tiempoFinal - this.tiempoInicio) / 60000);
+        let tiempoTotal = Math.floor((tiempoFinal - this.tiempoInicio) / 1000);
         return tiempoTotal;
+    }
+
+    resolver() {
+        //imprimo una matriz que solo necesita un movimiento para estar resuelta
+        let matrizRegalada = [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, " ", 8]
+        ];
+
+        this.movimientos = 0;
+        this.tiempoInicio = new Date();
+        document.getElementById("infoJuego").innerHTML = "";
+        document.querySelector("table").remove();
+        this.matriz = matrizRegalada;
+        this.imprimirMatriz();
     }
 }

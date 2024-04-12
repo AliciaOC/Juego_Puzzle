@@ -1,14 +1,12 @@
 //al llamar a la clase se ejecutan los métodod del constructor
 let juego = new Juego();
 
-// Agregar evento para el envío del formulario y obtener valores
-let formulario = document.getElementById("formulario");
+let reiniciar = document.getElementById("reiniciar");
+reiniciar.addEventListener("click", () => {
+    juego.restart();
+});
 
-formulario.addEventListener("submit", (event) => {
-    event.preventDefault(); // Prevenir el envío del formulario
-
-    let ficha = parseInt(document.getElementById("ficha").value);
-
-    // Llamar al método moverFicha con los valores obtenidos
-    juego.moverFicha(ficha);
+let resolver = document.getElementById("resolver");
+resolver.addEventListener("click", () => {
+    juego.resolver();
 });
